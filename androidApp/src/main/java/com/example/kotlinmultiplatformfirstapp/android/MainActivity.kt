@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.kotlinmultiplatformfirstapp.Greeting
@@ -19,7 +19,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    var text by remember { mutableStateOf("Loading") }
+                    // recompositionのたびに呼び出されるのを避けるために、greet() 関数を LaunchedEffect 内で呼び出す
+                    LaunchedEffect(true) {
+                        text = try {
+                            Greeting().greet()
+                        } catch (e: Exception) {
+                            e.localizedMessage ?: "error"
+                        }
+                    }
+                    GreetingView(text)
                 }
             }
         }
